@@ -6,17 +6,17 @@ import (
 	"fmt"
 )
 
-func (r *Repository) CreateLog(ctx context.Context, fileName, fileType string) (int64, error) {
+func (r *Repository) CreateLog(ctx context.Context, q DBTX, fileName, fileType string) (int64, error) {
 	var id int64
 	query := "INSERT INTO logs(filename, file_type) VALUES ($1, $2) RETURNING id"
-	row := r.db.QueryRowContext(ctx, query, fileName, fileType)
+	row := q.QueryRowContext(ctx, query, fileName, fileType)
 	if err := row.Scan(&id); err != nil {
 		return 0, fmt.Errorf("create log filename=%q file_type=%q: %w", fileName, fileType, err)
 	}
 	return id, nil
 }
 
-func (r *Repository) GetLogMeta(ctx context.Context, logID int64) (*LogMeta, error) {
+func (r *Repository) GetLogMeta(ctx context.Context, q DBTX, logID int64) (*LogMeta, error) {
 	query := `
         SELECT
             l.id,
@@ -30,7 +30,7 @@ func (r *Repository) GetLogMeta(ctx context.Context, logID int64) (*LogMeta, err
     `
 
 	var meta LogMeta
-	err := r.db.QueryRowContext(ctx, query, logID).Scan(
+	err := q.QueryRowContext(ctx, query, logID).Scan(
 		&meta.ID,
 		&meta.FileName,
 		&meta.FileType,

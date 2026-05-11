@@ -6,7 +6,7 @@ import (
 	"repo/internal/parser"
 )
 
-func (r *Repository) CreatePorts(ctx context.Context, logID int64, nodeIDs map[string]int64, ports []parser.PortRow) error {
+func (r *Repository) CreatePorts(ctx context.Context, q DBTX, logID int64, nodeIDs map[string]int64, ports []parser.PortRow) error {
 	query := `
 		INSERT INTO ports (
 			log_id,
@@ -37,7 +37,7 @@ func (r *Repository) CreatePorts(ctx context.Context, logID int64, nodeIDs map[s
 			return fmt.Errorf("create port: node id not found for node_guid=%q", port.NodeGUID)
 		}
 
-		_, err := r.db.ExecContext(
+		_, err := q.ExecContext(
 			ctx,
 			query,
 			logID,
@@ -63,7 +63,7 @@ func (r *Repository) CreatePorts(ctx context.Context, logID int64, nodeIDs map[s
 	return nil
 }
 
-func (r *Repository) GetPortsByNodeID(ctx context.Context, nodeID int64) ([]Port, error) {
+func (r *Repository) GetPortsByNodeID(ctx context.Context, q DBTX, nodeID int64) ([]Port, error) {
 	result := make([]Port, 0)
 	query := `
 		SELECT 
@@ -82,7 +82,7 @@ func (r *Repository) GetPortsByNodeID(ctx context.Context, nodeID int64) ([]Port
 		WHERE node_id = $1
 		ORDER BY port_num`
 
-	rows, err := r.db.QueryContext(ctx, query, nodeID)
+	rows, err := q.QueryContext(ctx, query, nodeID)
 
 	if err != nil {
 		return nil, fmt.Errorf("get port by node_id = %d: %w", nodeID, err)

@@ -6,7 +6,7 @@ import (
 	"repo/internal/parser"
 )
 
-func (r *Repository) CreateNodes(ctx context.Context, logID int64, nodes []parser.NodeRow) (map[string]int64, error) {
+func (r *Repository) CreateNodes(ctx context.Context, q DBTX, logID int64, nodes []parser.NodeRow) (map[string]int64, error) {
 	m := make(map[string]int64)
 	for _, node := range nodes {
 		var id int64
@@ -22,7 +22,7 @@ func (r *Repository) CreateNodes(ctx context.Context, logID int64, nodes []parse
         system_image_guid = EXCLUDED.system_image_guid,
         port_guid = EXCLUDED.port_guid
     RETURNING id`
-		row := r.db.QueryRowContext(ctx, query,
+		row := q.QueryRowContext(ctx, query,
 			logID,
 			node.NodeGUID,
 			node.NodeDesc,
@@ -41,7 +41,7 @@ func (r *Repository) CreateNodes(ctx context.Context, logID int64, nodes []parse
 	return m, nil
 }
 
-func (r *Repository) GetNodesByLogID(ctx context.Context, logID int64) ([]Node, error) {
+func (r *Repository) GetNodesByLogID(ctx context.Context, q DBTX, logID int64) ([]Node, error) {
 	result := make([]Node, 0)
 	query := `
 		SELECT 
@@ -57,7 +57,7 @@ func (r *Repository) GetNodesByLogID(ctx context.Context, logID int64) ([]Node, 
     		port_guid
 			FROM nodes 
 		WHERE log_id = $1 `
-	rows, err := r.db.QueryContext(ctx, query, logID)
+	rows, err := q.QueryContext(ctx, query, logID)
 
 	if err != nil {
 		return nil, fmt.Errorf("get nodes by log_id = %d: %w", logID, err)

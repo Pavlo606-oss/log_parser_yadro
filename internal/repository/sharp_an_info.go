@@ -6,7 +6,7 @@ import (
 	"repo/internal/parser"
 )
 
-func (r *Repository) CreateSharpANInfos(ctx context.Context, logID int64, infos []parser.SharpANInfoRow) error {
+func (r *Repository) CreateSharpANInfos(ctx context.Context, q DBTX, logID int64, infos []parser.SharpANInfoRow) error {
 	query := `
 		INSERT INTO sharp_an_info (
 			log_id,
@@ -23,7 +23,7 @@ func (r *Repository) CreateSharpANInfos(ctx context.Context, logID int64, infos 
 	`
 
 	for _, info := range infos {
-		_, err := r.db.ExecContext(
+		_, err := q.ExecContext(
 			ctx,
 			query,
 			logID,

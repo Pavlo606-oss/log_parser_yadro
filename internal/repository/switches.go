@@ -6,7 +6,7 @@ import (
 	"repo/internal/parser"
 )
 
-func (r *Repository) CreateSwitches(ctx context.Context, logID int64, nodeIDs map[string]int64, switches []parser.SwitchRow) error {
+func (r *Repository) CreateSwitches(ctx context.Context, q DBTX, logID int64, nodeIDs map[string]int64, switches []parser.SwitchRow) error {
 	query := `
 		INSERT INTO switches (
 			log_id,
@@ -63,7 +63,7 @@ func (r *Repository) CreateSwitches(ctx context.Context, logID int64, nodeIDs ma
 			return fmt.Errorf("create switch: node id not found for node_guid=%q", sw.NodeGUID)
 		}
 
-		_, err := r.db.ExecContext(
+		_, err := q.ExecContext(
 			ctx,
 			query,
 			logID,
