@@ -20,7 +20,7 @@ func (r *Repository) GetLogMeta(ctx context.Context, q DBTX, logID int64) (*LogM
 	query := `
         SELECT
             l.id,
-            l.file_name,
+            l.filename,
             l.file_type,
             l.imported_at,
             (SELECT COUNT(*) FROM nodes WHERE log_id = l.id) AS nodes_count,
