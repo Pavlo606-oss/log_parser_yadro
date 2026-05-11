@@ -16,7 +16,7 @@ func (r *Repository) CreateLog(ctx context.Context, q DBTX, fileName, fileType s
 	return id, nil
 }
 
-func (r *Repository) GetLogMeta(ctx context.Context, q DBTX, logID int64) (*LogMeta, error) {
+func (r *Repository) GetLogMeta(ctx context.Context, logID int64) (*LogMeta, error) {
 	query := `
         SELECT
             l.id,
@@ -30,7 +30,7 @@ func (r *Repository) GetLogMeta(ctx context.Context, q DBTX, logID int64) (*LogM
     `
 
 	var meta LogMeta
-	err := q.QueryRowContext(ctx, query, logID).Scan(
+	err := r.db.QueryRowContext(ctx, query, logID).Scan(
 		&meta.ID,
 		&meta.FileName,
 		&meta.FileType,

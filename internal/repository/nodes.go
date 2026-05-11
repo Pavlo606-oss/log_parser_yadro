@@ -41,7 +41,7 @@ func (r *Repository) CreateNodes(ctx context.Context, q DBTX, logID int64, nodes
 	return m, nil
 }
 
-func (r *Repository) GetNodesByLogID(ctx context.Context, q DBTX, logID int64) ([]Node, error) {
+func (r *Repository) GetNodesByLogID(ctx context.Context, logID int64) ([]Node, error) {
 	result := make([]Node, 0)
 	query := `
 		SELECT 
@@ -57,7 +57,7 @@ func (r *Repository) GetNodesByLogID(ctx context.Context, q DBTX, logID int64) (
     		port_guid
 			FROM nodes 
 		WHERE log_id = $1 `
-	rows, err := q.QueryContext(ctx, query, logID)
+	rows, err := r.db.QueryContext(ctx, query, logID)
 
 	if err != nil {
 		return nil, fmt.Errorf("get nodes by log_id = %d: %w", logID, err)
