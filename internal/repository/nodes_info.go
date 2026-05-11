@@ -52,7 +52,7 @@ func (r *Repository) CreateNodeInfos(ctx context.Context, q DBTX, logID int64, n
 	return nil
 }
 
-func (r *Repository) GetNodeDetailByID(ctx context.Context, q DBTX, nodeID int64) (*NodeDetail, error) {
+func (r *Repository) GetNodeDetailByID(ctx context.Context, nodeID int64) (*NodeDetail, error) {
 	query := `
 		SELECT 
 			n.id, n.log_id, n.node_guid, n.node_desc, n.num_ports, n.node_type,
@@ -106,7 +106,7 @@ func (r *Repository) GetNodeDetailByID(ctx context.Context, q DBTX, nodeID int64
 	var sENP0 sql.NullInt64
 	var sMCastFDBTop sql.NullInt64
 
-	err := q.QueryRowContext(ctx, query, nodeID).Scan(
+	err := r.db.QueryRowContext(ctx, query, nodeID).Scan(
 		&node.ID, &node.LogID, &node.NodeGUID, &node.NodeDesc, &node.NumPorts, &node.NodeType,
 		&node.ClassVersion, &node.BaseVersion, &node.SystemImageGUID, &node.PortGUID,
 

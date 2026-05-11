@@ -63,7 +63,7 @@ func (r *Repository) CreatePorts(ctx context.Context, q DBTX, logID int64, nodeI
 	return nil
 }
 
-func (r *Repository) GetPortsByNodeID(ctx context.Context, q DBTX, nodeID int64) ([]Port, error) {
+func (r *Repository) GetPortsByNodeID(ctx context.Context, nodeID int64) ([]Port, error) {
 	result := make([]Port, 0)
 	query := `
 		SELECT 
@@ -82,7 +82,7 @@ func (r *Repository) GetPortsByNodeID(ctx context.Context, q DBTX, nodeID int64)
 		WHERE node_id = $1
 		ORDER BY port_num`
 
-	rows, err := q.QueryContext(ctx, query, nodeID)
+	rows, err := r.db.QueryContext(ctx, query, nodeID)
 
 	if err != nil {
 		return nil, fmt.Errorf("get port by node_id = %d: %w", nodeID, err)
