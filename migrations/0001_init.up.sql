@@ -1,11 +1,11 @@
-CREATE TABLE logs (
+CREATE TABLE IF NOT EXISTS logs (
     id BIGSERIAL PRIMARY KEY,
     filename TEXT NOT NULL,
     file_type TEXT NOT NULL,
     imported_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE nodes (
+CREATE TABLE IF NOT EXISTS nodes (
     id BIGSERIAL PRIMARY KEY,
     log_id BIGINT NOT NULL REFERENCES logs(id) ON DELETE CASCADE,
     node_guid TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE nodes (
     UNIQUE (log_id, node_guid)
 );
 
-CREATE TABLE ports (
+CREATE TABLE IF NOT EXISTS ports (
     id BIGSERIAL PRIMARY KEY,
     log_id BIGINT NOT NULL REFERENCES logs(id) ON DELETE CASCADE,
     node_id BIGINT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
@@ -34,7 +34,7 @@ CREATE TABLE ports (
     UNIQUE (log_id, node_guid, port_num)
 );
 
-CREATE TABLE switches (
+CREATE TABLE IF NOT EXISTS switches (
     id BIGSERIAL PRIMARY KEY,
     log_id BIGINT NOT NULL REFERENCES logs(id) ON DELETE CASCADE,
     node_id BIGINT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
@@ -60,7 +60,7 @@ CREATE TABLE switches (
     UNIQUE (log_id, node_guid)
 );
 
-CREATE TABLE nodes_info (
+CREATE TABLE IF NOT EXISTS nodes_info (
     id BIGSERIAL PRIMARY KEY,
     log_id BIGINT NOT NULL REFERENCES logs(id) ON DELETE CASCADE,
     node_id BIGINT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
@@ -72,7 +72,7 @@ CREATE TABLE nodes_info (
     UNIQUE (log_id, node_guid)
 );
 
-CREATE TABLE sharp_an_info (
+CREATE TABLE IF NOT EXISTS sharp_an_info (
     id BIGSERIAL PRIMARY KEY,
     log_id BIGINT NOT NULL REFERENCES logs(id) ON DELETE CASCADE,
     sw_guid TEXT NOT NULL,
