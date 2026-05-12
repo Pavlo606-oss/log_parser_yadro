@@ -46,15 +46,13 @@ func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	ctx := r.Context()
-	result, err := h.s.ImportLog(ctx, file, req.Path)
+	result, err := h.s.ImportLog(r.Context(), file, req.Path)
 	if err != nil {
 		http.Error(w, "failed to import log", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err = json.NewEncoder(w).Encode(PostLogResp{LogID: result}); err != nil {
+
+	if err = writeJSON(w, http.StatusCreated, PostLogResp{LogID: result}); err != nil {
 		return
 	}
 }
@@ -67,16 +65,13 @@ func (h *Handler) GetNodeTopology(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	result, err := h.s.GetNodes(ctx, logID)
+	result, err := h.s.GetNodes(r.Context(), logID)
 	if err != nil {
 		http.Error(w, "failed to get nodes", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(result); err != nil {
+	if err = writeJSON(w, http.StatusOK, result); err != nil {
 		return
 	}
 }
@@ -90,16 +85,13 @@ func (h *Handler) GetNodeDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	result, err := h.s.GetNodeDetail(ctx, nodeID)
+	result, err := h.s.GetNodeDetail(r.Context(), nodeID)
 	if err != nil {
 		http.Error(w, "failed to get node detail", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(result); err != nil {
+	if err = writeJSON(w, http.StatusOK, result); err != nil {
 		return
 	}
 }
@@ -113,16 +105,13 @@ func (h *Handler) GetPorts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	result, err := h.s.GetPortsByNodeId(ctx, nodeID)
+	result, err := h.s.GetPortsByNodeId(r.Context(), nodeID)
 	if err != nil {
 		http.Error(w, "failed to get ports", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(result); err != nil {
+	if err = writeJSON(w, http.StatusOK, result); err != nil {
 		return
 	}
 }
@@ -135,16 +124,13 @@ func (h *Handler) GetLogMeta(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	result, err := h.s.GetLogMetaByID(ctx, logID)
+	result, err := h.s.GetLogMetaByID(r.Context(), logID)
 	if err != nil {
 		http.Error(w, "failed to get meta log", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(result); err != nil {
+	if err = writeJSON(w, http.StatusOK, result); err != nil {
 		return
 	}
 }
