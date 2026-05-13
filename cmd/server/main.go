@@ -17,7 +17,7 @@ const BaseURL = ":8080"
 func main() {
 	c := config.Load()
 
-	db, err := sql.Open("postgres", c.DSN())
+	db, err := sql.Open("pgx", c.DSN())
 	if err != nil {
 		log.Fatal(err)
 	}
