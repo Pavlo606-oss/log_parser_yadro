@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     image: postgres:15-alpine
     container_name: log_parser-postgres
     environment:
@@ -27,13 +27,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_HOST: postgres
+      DB_HOST: db
       DB_PORT: 5432
       DB_USER: parser_user
       DB_PASSWORD: parser_pass
       DB_NAME: parser_db
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
     networks:
       - parser-network
