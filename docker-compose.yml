@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: log_parser-postgres
+    environment:
+      POSTGRES_USER: parser_user
+      POSTGRES_PASSWORD: parser_pass
+      POSTGRES_DB: parser_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/0001_init.up.sql:/docker-entrypoint-initdb.d/0001_init.sql:ro
+    networks:
+      - parser-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parser_user -d parser_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: parser-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: parser_user
+      DB_PASSWORD: parser_pass
+      DB_NAME: parser_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - parser-network
+
+networks:
+  parser-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
