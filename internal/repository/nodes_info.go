@@ -67,8 +67,8 @@ func (r *Repository) GetNodeDetailByID(ctx context.Context, nodeID int64) (*Node
 			s.optimized_slvl_mapping, s.lids_per_port, s.part_enf_cap, s.inb_enf_cap,
 			s.outb_enf_cap, s.filter_raw_inb_cap, s.filter_raw_outb_cap, s.enp0, s.mcast_fdb_top
 		FROM nodes n
-		LEFT JOIN nodes_info ni ON ni.node_id = n.id
-		LEFT JOIN switches s ON s.node_id = n.id
+		LEFT JOIN nodes_info ni ON ni.node_id = n.id AND n.log_id = ni.log_id
+		LEFT JOIN switches s ON s.node_id = n.id AND s.log_id = n.log_id
 		WHERE n.id = $1
 	`
 

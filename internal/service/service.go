@@ -93,8 +93,8 @@ func (s *Service) ImportLog(ctx context.Context, r io.Reader, filename string) (
 	}
 }
 
-func (s *Service) GetNodes(ctx context.Context, logID int64) ([]repository.Node, error) {
-	result, err := s.repo.GetNodesByLogID(ctx, logID)
+func (s *Service) GetNodesTopology(ctx context.Context, logID int64) (*repository.NodesTopology, error) {
+	result, err := s.repo.GetNodesTopology(ctx, logID)
 	if err != nil {
 		return nil, fmt.Errorf("get nodes: %w", err)
 	}

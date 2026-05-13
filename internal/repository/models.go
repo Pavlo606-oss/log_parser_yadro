@@ -96,3 +96,12 @@ type LogMeta struct {
 	NodesCount int       `json:"nodes_count"`
 	PortsCount int       `json:"ports_count"`
 }
+
+type NodeTopology struct {
+	Node  *Node   `json:"node"`
+	Ports []*Port `json:"ports"`
+}
+
+type NodesTopology struct {
+	Items []*NodeTopology `json:"items"`
+}

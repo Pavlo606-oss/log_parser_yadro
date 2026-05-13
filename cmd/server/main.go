@@ -34,7 +34,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/v1/parse", h.PostLog)
-	mux.HandleFunc("GET /api/v1/topology/{log_id}", h.GetNodeTopology)
+	mux.HandleFunc("GET /api/v1/topology/{log_id}", h.GetNodesTopology)
 	mux.HandleFunc("GET /api/v1/node/{node_id}", h.GetNodeDetail)
 	mux.HandleFunc("GET /api/v1/port/{node_id}", h.GetPorts)
 	mux.HandleFunc("GET /api/v1/log/{log_id}", h.GetLogMeta)

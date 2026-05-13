@@ -63,7 +63,7 @@ func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetNodeTopology(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetNodesTopology(w http.ResponseWriter, r *http.Request) {
 	logIDStr := r.PathValue("log_id")
 	logID, err := strconv.ParseInt(logIDStr, 10, 64)
 	if err != nil || logID <= 0 {
@@ -71,7 +71,7 @@ func (h *Handler) GetNodeTopology(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := h.s.GetNodes(r.Context(), logID)
+	result, err := h.s.GetNodesTopology(r.Context(), logID)
 	if err != nil {
 		http.Error(w, "failed to get nodes", http.StatusInternalServerError)
 		return
