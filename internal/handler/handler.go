@@ -5,12 +5,17 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"path/filepath"
 	"repo/internal/service"
 	"strconv"
 )
 
 type Handler struct {
 	s *service.Service
+}
+
+func NewHandler(s *service.Service) *Handler {
+	return &Handler{s: s}
 }
 
 func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +36,8 @@ func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := os.Open(req.Path)
+	path := filepath.Join("data", req.Path)
+	file, err := os.Open(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			http.Error(w, "file not found", http.StatusNotFound)
