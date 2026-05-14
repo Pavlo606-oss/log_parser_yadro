@@ -12,7 +12,11 @@ FROM alpine:3.20
 
 WORKDIR /app
 
+RUN apk --no-cache add ca-certificates
+
 COPY --from=builder /app/app .
 COPY ./data ./data
+
+EXPOSE 8080
 
 CMD ["./app"]
