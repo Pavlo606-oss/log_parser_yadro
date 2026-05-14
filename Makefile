@@ -25,3 +25,10 @@ migrate-up:
 
 migrate-down:
 	docker exec -i log_parser-postgres psql -U parser_user -d parser_db < migrations/0001_init.down.sql
+
+fmt:
+	go fmt ./...
+	gofmt -s -w .
+
+lint:
+	golangci-lint run
