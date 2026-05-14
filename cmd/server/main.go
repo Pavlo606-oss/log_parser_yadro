@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,7 +26,12 @@ func main() {
 		slog.Error("failed to open database", "error", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("close db: %v", err)
+		}
+	}()
 
 	if err := db.Ping(); err != nil {
 		slog.Error("failed to ping database", "error", err)
@@ -38,6 +44,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/v1/parse", h.PostLog)
+	mux.HandleFunc("POST /api/v1/parse/", h.PostLog)
 	mux.HandleFunc("GET /api/v1/topology/{log_id}", h.GetNodesTopology)
 	mux.HandleFunc("GET /api/v1/node/{node_id}", h.GetNodeDetail)
 	mux.HandleFunc("GET /api/v1/port/{node_id}", h.GetPorts)

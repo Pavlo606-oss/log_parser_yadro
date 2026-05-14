@@ -31,7 +31,9 @@ func (s *Service) ImportLog(ctx context.Context, r io.Reader, filename string) (
 		if err != nil {
 			return 0, fmt.Errorf("begin tx: %w", err)
 		}
-		defer tx.Rollback()
+		defer func() {
+			_ = tx.Rollback()
+		}()
 
 		result, err = s.repo.CreateLog(ctx, tx, filename, ".db_csv")
 		if err != nil {
@@ -72,7 +74,9 @@ func (s *Service) ImportLog(ctx context.Context, r io.Reader, filename string) (
 		if err != nil {
 			return 0, fmt.Errorf("begin tx: %w", err)
 		}
-		defer tx.Rollback()
+		defer func() {
+			_ = tx.Rollback()
+		}()
 
 		result, err = s.repo.CreateLog(ctx, tx, filename, ".sharp_an_info")
 		if err != nil {

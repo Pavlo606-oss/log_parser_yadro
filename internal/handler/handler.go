@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,7 +24,12 @@ func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty request body", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
+
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			log.Printf("close request body: %v", err)
+		}
+	}()
 
 	var req PostLogReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -50,7 +56,12 @@ func (h *Handler) PostLog(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to open file", http.StatusInternalServerError)
 		return
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Printf("close file: %v", err)
+		}
+	}()
 
 	result, err := h.s.ImportLog(r.Context(), file, req.Path)
 	if err != nil {

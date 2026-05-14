@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"repo/internal/parser"
 	"sort"
 )
@@ -78,7 +79,11 @@ func (r *Repository) GetNodesTopology(ctx context.Context, logID int64) (*NodesT
 		return nil, fmt.Errorf("get nodes by log_id = %d: %w", logID, err)
 	}
 
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("close rows: %v", err)
+		}
+	}()
 
 	for rows.Next() {
 		var portID sql.NullInt64

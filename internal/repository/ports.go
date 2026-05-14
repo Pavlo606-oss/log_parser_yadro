@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"repo/internal/parser"
 )
 
@@ -88,7 +89,11 @@ func (r *Repository) GetPortsByNodeID(ctx context.Context, nodeID int64) ([]Port
 		return nil, fmt.Errorf("get port by node_id = %d: %w", nodeID, err)
 	}
 
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("close rows: %v", err)
+		}
+	}()
 
 	for rows.Next() {
 		port := Port{}
