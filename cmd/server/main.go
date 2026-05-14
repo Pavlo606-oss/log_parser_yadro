@@ -2,8 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
+	"strings"
+
 	"repo/internal/config"
 	"repo/internal/handler"
 	"repo/internal/repository"
@@ -12,21 +15,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const BaseURL = ":8080"
-
 func main() {
-	c := config.Load()
+	cfg := config.Load()
 
-	db, err := sql.Open("postgres", c.DSN())
+	setupLogger(cfg.LogLevel)
+
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("failed to open database", "error", err)
+		os.Exit(1)
 	}
+	defer db.Close()
 
 	if err := db.Ping(); err != nil {
-		log.Fatal(err)
+		slog.Error("failed to ping database", "error", err)
+		os.Exit(1)
 	}
-
-	defer db.Close()
 
 	r := repository.NewRepository(db)
 	s := service.NewService(r)
@@ -39,5 +43,32 @@ func main() {
 	mux.HandleFunc("GET /api/v1/port/{node_id}", h.GetPorts)
 	mux.HandleFunc("GET /api/v1/log/{log_id}", h.GetLogMeta)
 
-	log.Fatal(http.ListenAndServe(BaseURL, mux))
+	addr := ":" + cfg.Port
+	slog.Info("server started", "addr", addr)
+
+	if err := http.ListenAndServe(addr, mux); err != nil {
+		slog.Error("server stopped", "error", err)
+		os.Exit(1)
+	}
+}
+
+func setupLogger(logLevel string) {
+	var level slog.Level
+
+	switch strings.ToUpper(logLevel) {
+	case "DEBUG":
+		level = slog.LevelDebug
+	case "WARN":
+		level = slog.LevelWarn
+	case "ERROR":
+		level = slog.LevelError
+	default:
+		level = slog.LevelInfo
+	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: level,
+	}))
+
+	slog.SetDefault(logger)
 }
