@@ -9,7 +9,7 @@ import (
 	"repo/internal/repository"
 	"repo/internal/service"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/lib/pq"
 )
 
 const BaseURL = ":8080"
@@ -17,7 +17,7 @@ const BaseURL = ":8080"
 func main() {
 	c := config.Load()
 
-	db, err := sql.Open("pgx", c.DSN())
+	db, err := sql.Open("postgres", c.DSN())
 	if err != nil {
 		log.Fatal(err)
 	}
