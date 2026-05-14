@@ -70,6 +70,8 @@ func ParseSharpANInfo(r io.Reader) ([]SharpANInfoRow, error) {
 				return nil, err
 			}
 			continue
+		case strings.HasPrefix(line, "---"):
+			continue
 		default:
 			key, value, ok := parseINFOLine(line)
 			if !ok {
